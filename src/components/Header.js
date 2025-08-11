@@ -1,19 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "antd";
+import { UploadOutlined } from "@ant-design/icons";
 import PhoneAuth from "./PhoneAuth";
+import UploadMedia from "./UploadMedia";
 import { auth } from "../firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 
 export default function Header({ style }) {
   const [user, setUser] = useState(null);
   const [showPhoneAuth, setShowPhoneAuth] = useState(false);
+  const [showUpload, setShowUpload] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsub = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
     });
-    return () => unsubscribe();
+    return () => unsub();
   }, []);
 
   const handleLogout = async () => {
@@ -64,16 +67,20 @@ export default function Header({ style }) {
     button: {
       background: "transparent",
       border: "1px solid #fff",
-      color: "#fff",
       borderRadius: 4,
-      fontSize: "0.9rem",
-      padding: "4px 12px",
+      color: "#fff",
+      padding: "6px 12px",
       cursor: "pointer",
+      fontSize: "0.9rem",
+      marginLeft: 8,
       height: 32,
-      minWidth: 70,
       display: "flex",
       alignItems: "center",
-      justifyContent: "center",
+      gap: 6,
+    },
+    rightControls: {
+      display: "flex",
+      alignItems: "center",
     },
   };
 
@@ -85,28 +92,33 @@ export default function Header({ style }) {
           <h2 style={styles.title}>Paintikaa</h2>
         </Link>
 
-        {user ? (
-          <Button
-            type="text"
-            style={styles.button}
-            onClick={handleLogout}
-            ghost
-          >
-            Logout
-          </Button>
-        ) : (
-          <Button
-            type="text"
-            style={styles.button}
-            onClick={() => setShowPhoneAuth(true)}
-            ghost
-          >
-            Login
-          </Button>
-        )}
+        <div style={styles.rightControls}>
+          {/* Upload button - same style as login/logout */}
+          {user && (
+            <Button
+              type="text"
+              icon={<UploadOutlined />}
+              style={styles.button}
+              onClick={() => setShowUpload(true)}
+            >
+              Upload
+            </Button>
+          )}
+
+          {user ? (
+            <Button style={styles.button} onClick={handleLogout}>
+              Logout
+            </Button>
+          ) : (
+            <Button style={styles.button} onClick={() => setShowPhoneAuth(true)}>
+              Login
+            </Button>
+          )}
+        </div>
       </header>
 
       <PhoneAuth visible={showPhoneAuth} onClose={() => setShowPhoneAuth(false)} />
+      <UploadMedia visible={showUpload} onClose={() => setShowUpload(false)} />
     </>
   );
 }
