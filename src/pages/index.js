@@ -112,7 +112,7 @@ export function ContactUs() {
 
   return (
     <div style={containerStyle}>
-      <h1>Contact Us</h1>
+      <h1>Contact Us!</h1>
       <p>
         Have questions, feedback, or need support? Reach out to our customer care team using the
         form below, and we'll get back to you promptly.
