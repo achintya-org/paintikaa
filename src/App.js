@@ -1,17 +1,33 @@
 import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 
 import { AboutUs, ContactUs, PrivacyPolicy, ShippingPolicy } from "./pages";
-import Home  from "./pages/Home.js";
+import Home from "./pages/Home.js";
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 
-export default function App() {
+function AppContent() {
+  const location = useLocation();
   const [showHeaderFooter, setShowHeaderFooter] = useState(true);
 
+  // Reset header/footer visible to true on every route change
   useEffect(() => {
-    const toggleVisibility = () => setShowHeaderFooter((v) => !v);
+    setShowHeaderFooter(true);
+  }, [location]);
+
+  // Toggle header/footer visibility on click/touch outside header/footer/links/buttons
+  useEffect(() => {
+    const toggleVisibility = (e) => {
+      const clickedInsideHeader = e.target.closest("header");
+      const clickedInsideFooter = e.target.closest("footer");
+      const clickedOnLinkOrButton =
+        e.target.tagName === "A" || e.target.closest("a") || e.target.tagName === "BUTTON";
+
+      if (!clickedInsideHeader && !clickedInsideFooter && !clickedOnLinkOrButton) {
+        setShowHeaderFooter((v) => !v);
+      }
+    };
 
     window.addEventListener("click", toggleVisibility);
     window.addEventListener("touchstart", toggleVisibility);
@@ -24,18 +40,24 @@ export default function App() {
 
   const styles = {
     mainContent: {
-      paddingTop: showHeaderFooter ? "60px" : "0",
-      paddingBottom: showHeaderFooter ? "80px" : "0",
+      paddingTop: 60, // fixed padding to prevent content shift
+      paddingBottom: 80, // fixed padding to prevent content shift
       overflowY: "auto",
       height: "100vh",
       boxSizing: "border-box",
-      transition: "padding 0.3s ease",
+      transition: "opacity 0.3s ease",
     },
   };
 
   return (
-    <Router>
-      {showHeaderFooter && <Header />}
+    <>
+      <Header
+        style={{
+          visibility: showHeaderFooter ? "visible" : "hidden",
+          opacity: showHeaderFooter ? 1 : 0,
+          transition: "opacity 0.3s ease",
+        }}
+      />
 
       <main style={styles.mainContent}>
         <Routes>
@@ -47,7 +69,22 @@ export default function App() {
         </Routes>
       </main>
 
-      {showHeaderFooter && <Footer />}
+      <Footer
+        style={{
+          visibility: showHeaderFooter ? "visible" : "hidden",
+          opacity: showHeaderFooter ? 1 : 0,
+          transition: "opacity 0.3s ease",
+        }}
+      />
+    </>
+  );
+}
+
+
+export default function App() {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 }

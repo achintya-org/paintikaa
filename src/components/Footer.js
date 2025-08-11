@@ -8,7 +8,7 @@ const footerLinks = [
   { name: "Shipping Policy", path: "/shipping-policy" },
 ];
 
-export default function Footer() {
+export default function Footer({ style }) {
   const styles = {
     footer: {
       position: "fixed",
@@ -29,6 +29,8 @@ export default function Footer() {
       zIndex: 10,
       backdropFilter: "saturate(180%) blur(8px)",
       WebkitBackdropFilter: "saturate(180%) blur(8px)",
+      transition: "opacity 0.3s ease, visibility 0.3s ease",
+      ...style,
     },
     link: {
       color: "#fff",

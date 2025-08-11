@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-export default function Header() {
+export default function Header({ style }) {
   const styles = {
     header: {
       position: "fixed",
@@ -19,16 +19,20 @@ export default function Header() {
       userSelect: "none",
       backdropFilter: "saturate(180%) blur(8px)",
       WebkitBackdropFilter: "saturate(180%) blur(8px)",
+      transition: "opacity 0.3s ease, visibility 0.3s ease",
+      ...style,
     },
     logoLink: {
-      display: "inline-block",
+      display: "flex",       // make Link a flex container
+      alignItems: "center",  // vertically center content
       cursor: "pointer",
-      marginRight: "15px",
       textDecoration: "none",
+      color: "inherit",      // inherit white color
     },
     logo: {
       height: "40px",
-      verticalAlign: "middle",
+      marginRight: "12px",   // spacing between logo and text
+      display: "block",
     },
     title: {
       fontSize: "1.5rem",
@@ -36,7 +40,6 @@ export default function Header() {
       letterSpacing: "0.05em",
       margin: 0,
       userSelect: "none",
-      color: "#fff",
       lineHeight: "40px",
     },
   };
@@ -45,8 +48,8 @@ export default function Header() {
     <header style={styles.header}>
       <Link to="/" style={styles.logoLink} aria-label="Go to homepage">
         <img src="/favicon.png" alt="Paintikaa Logo" style={styles.logo} />
+        <h2 style={styles.title}>Paintikaa</h2>
       </Link>
-      <h2 style={styles.title}>Paintikaa</h2>
     </header>
   );
 }
