@@ -209,7 +209,7 @@ export function PrivacyPolicy() {
 export function ShippingPolicy() {
   return (
     <div style={containerStyle}>
-      <h1>Shipping Policy</h1>
+      <h1>Shipping Policy!</h1>
       <p>
         Paintikaa offers reliable and timely shipping worldwide. Below is an overview of our
         shipping terms and procedures.
