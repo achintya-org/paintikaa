@@ -17,7 +17,7 @@ const containerStyle = {
 export function AboutUs() {
   return (
     <div style={containerStyle}>
-      <h1>About Us</h1>
+      <h1>About Us!</h1>
       <p>
         Welcome to Paintikaa, your trusted online marketplace for unique and quality products.
         We strive to provide an exceptional shopping experience with a vast selection,
