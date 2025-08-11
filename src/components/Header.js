@@ -13,15 +13,11 @@ export default function Header({ style }) {
   const [showUpload, setShowUpload] = useState(false);
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
     });
-    return () => unsub();
+    return () => unsubscribe();
   }, []);
-
-  const handleLogout = async () => {
-    await signOut(auth);
-  };
 
   const styles = {
     header: {
@@ -64,23 +60,23 @@ export default function Header({ style }) {
       userSelect: "none",
       lineHeight: "40px",
     },
+    buttonContainer: {
+      display: "flex",
+      alignItems: "center",
+      gap: 12, // space between buttons
+      flexWrap: "wrap",
+    },
     button: {
       background: "transparent",
       border: "1px solid #fff",
-      borderRadius: 4,
+      borderRadius: "4px",
       color: "#fff",
       padding: "6px 12px",
       cursor: "pointer",
       fontSize: "0.9rem",
-      marginLeft: 8,
-      height: 32,
       display: "flex",
       alignItems: "center",
-      gap: 6,
-    },
-    rightControls: {
-      display: "flex",
-      alignItems: "center",
+      whiteSpace: "nowrap",
     },
   };
 
@@ -92,12 +88,11 @@ export default function Header({ style }) {
           <h2 style={styles.title}>Paintikaa</h2>
         </Link>
 
-        <div style={styles.rightControls}>
-          {/* Upload button - same style as login/logout */}
+        <div style={styles.buttonContainer}>
           {user && (
             <Button
               type="text"
-              icon={<UploadOutlined />}
+              icon={<UploadOutlined style={{ color: "#fff", fontSize: 18 }} />}
               style={styles.button}
               onClick={() => setShowUpload(true)}
             >
@@ -106,7 +101,7 @@ export default function Header({ style }) {
           )}
 
           {user ? (
-            <Button style={styles.button} onClick={handleLogout}>
+            <Button style={styles.button} onClick={() => signOut(auth)}>
               Logout
             </Button>
           ) : (
@@ -118,7 +113,7 @@ export default function Header({ style }) {
       </header>
 
       <PhoneAuth visible={showPhoneAuth} onClose={() => setShowPhoneAuth(false)} />
-      <UploadMedia visible={showUpload} onClose={() => setShowUpload(false)} />
+      <UploadMedia open={showUpload} onClose={() => setShowUpload(false)} />
     </>
   );
 }
