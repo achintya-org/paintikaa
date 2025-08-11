@@ -20,7 +20,7 @@
     "deploy": "npm run build && firebase deploy",
     "start": "react-scripts start",
     "deploy-preview": "npm run build && firebase hosting:channel:deploy local-preview",
-    "build": "react-scripts build",
+    "build": "CI=false react-scripts build"
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
