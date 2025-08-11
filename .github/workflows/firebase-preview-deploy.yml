@@ -29,5 +29,5 @@ jobs:
 
       - name: Deploy to Firebase Hosting Preview Channel
         env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-        run: firebase hosting:channel:deploy local-preview --token "$FIREBASE_TOKEN2"
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN2 }}
+        run: firebase hosting:channel:deploy local-preview --project paintikaa-2
