@@ -21,7 +21,7 @@ export default function Footer({ style }) {
       justifyContent: "center",
       alignItems: "center",
       padding: "10px 20px",
-      flexWrap: "wrap",
+      flexWrap: "nowrap",           // Changed from "wrap" to "nowrap" to prevent wrapping
       gap: "15px",
       boxSizing: "border-box",
       height: "60px",
@@ -30,6 +30,8 @@ export default function Footer({ style }) {
       backdropFilter: "saturate(180%) blur(8px)",
       WebkitBackdropFilter: "saturate(180%) blur(8px)",
       transition: "opacity 0.3s ease, visibility 0.3s ease",
+      overflowX: "auto",            // Added for horizontal scrolling on small screens
+      whiteSpace: "nowrap",         // Prevent text wrapping inside links
       ...style,
     },
     link: {
@@ -38,6 +40,7 @@ export default function Footer({ style }) {
       fontSize: "0.9rem",
       margin: "0 8px",
       transition: "color 0.2s ease-in-out",
+      whiteSpace: "nowrap",         // Prevent link text from breaking to multiple lines
     },
   };
 
