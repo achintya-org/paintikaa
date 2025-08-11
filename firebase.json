@@ -18,5 +18,19 @@
         "destination": "/index.html"
       }
     ]
+  },
+  {
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "Permissions-Policy",
+            "value": "unload=*"
+          }
+        ]
+      }
+    ]
   }
+  
 }
