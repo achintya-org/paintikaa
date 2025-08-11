@@ -69,7 +69,7 @@ export function ContactUs() {
       transition: "border-color 0.3s ease",
     },
     button: {
-      backgroundColor: "#00bfff",
+      backgroundColor: "#dcdde1",
       color: "#fff",
       border: "none",
       padding: "12px 20px",

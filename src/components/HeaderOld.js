@@ -7,7 +7,7 @@ import UploadMedia from "./UploadMedia";
 import { auth } from "../firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 
-export default function Header({ style }) {
+export default function HeaderOld({ style }) {
   const [user, setUser] = useState(null);
   const [showPhoneAuth, setShowPhoneAuth] = useState(false);
   const [showUpload, setShowUpload] = useState(false);
@@ -102,7 +102,7 @@ export default function Header({ style }) {
 
           {user ? (
             <Button style={styles.button} onClick={() => signOut(auth)}>
-              Logout
+              Logout.
             </Button>
           ) : (
             <Button style={styles.button} onClick={() => setShowPhoneAuth(true)}>

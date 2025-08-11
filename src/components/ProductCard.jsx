@@ -1,8 +1,10 @@
 // src/components/ProductCard.jsx
 import React from "react";
+import { Link } from "react-router-dom";
 
 export default function ProductCard({ product }) {
   const { title, description, price, mediaUrls } = product;
+  const { id } = product;
 
   const styles = {
     card: {
@@ -63,45 +65,50 @@ export default function ProductCard({ product }) {
       marginTop: 8,
     },
     price: {
-      fontWeight: "600",
-      fontSize: "1.1rem",
-      color: "#ffd700",
-    },
-    button: {
-      backgroundColor: "#ffd700",
-      border: "none",
-      borderRadius: 4,
-      padding: "6px 14px",
-      fontWeight: "600",
-      cursor: "pointer",
-      color: "#111",
-      transition: "background-color 0.3s ease",
-    },
+        fontWeight: "600",
+        fontSize: "1.1rem",
+        color: "#d35400",
+      },
+      button: {
+        backgroundColor: "grey",
+        border: "none",
+        borderRadius: 4,
+        padding: "6px 14px",
+        fontWeight: "600",
+        cursor: "pointer",
+        color: "white",
+        transition: "background-color 0.3s ease",
+      },
   };
 
   return (
+    <Link to={`/product/${id}`} style={{ textDecoration: "none", color: "inherit" }}>
+
     <div style={styles.card}>
       <div style={styles.mediaContainer}>
-        {mediaUrls.map((url, i) => {
-          const isVideo = /\.(mp4|webm)$/i.test(url);
-          return isVideo ? (
+      {mediaUrls.map((url, i) => {
+        const isVideo = /\.(mp4|webm)(\?|$)/i.test(url);
+        return isVideo ? (
             <video
-              key={i}
-              src={url}
-              controls
-              style={styles.mediaItem}
-              preload="metadata"
+            key={i}
+            src={url}
+            controls
+            style={styles.mediaItem}
+            preload="metadata"
+            muted
+            playsInline
             />
-          ) : (
+        ) : (
             <img
-              key={i}
-              src={url}
-              alt={title + " media " + (i + 1)}
-              style={styles.mediaItem}
-              loading="lazy"
+            key={i}
+            src={url}
+            alt={`${title} media ${i + 1}`}
+            style={styles.mediaItem}
+            loading="lazy"
             />
-          );
+        );
         })}
+
       </div>
       <div style={styles.overlay}>
         <h3 style={styles.title}>{title}</h3>
@@ -117,5 +124,7 @@ export default function ProductCard({ product }) {
         </div>
       </div>
     </div>
+    </Link>
+
   );
 }
