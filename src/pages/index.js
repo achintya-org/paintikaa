@@ -184,7 +184,7 @@ export function PrivacyPolicy() {
         At Paintikaa, we value your privacy and are committed to protecting your personal information.
         This policy outlines what data we collect, how we use it, and your rights.
       </p>
-      <h3>Information We Collect</h3>
+      <h3>Information We Collect.</h3>
       <ul>
         <li>Personal details you provide during registration and checkout.</li>
         <li>Payment information to process your orders securely.</li>
