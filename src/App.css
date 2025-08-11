@@ -36,3 +36,22 @@
     transform: rotate(360deg);
   }
 }
+
+.static-page {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}
+
+.static-page h1 {
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.static-page p, 
+.static-page ul {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
