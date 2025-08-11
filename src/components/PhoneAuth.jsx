@@ -1,13 +1,15 @@
-// PhoneAuth.js
 import React, { useState } from "react";
+import { Modal, Input, Button, Typography, message as antdMessage } from "antd";
 import { auth } from "../firebase";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 
-export default function PhoneAuth() {
+const { Title, Text } = Typography;
+
+export default function PhoneAuth({ visible, onClose }) {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [otp, setOtp] = useState("");
   const [confirmationResult, setConfirmationResult] = useState(null);
-  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // Initialize reCAPTCHA once
   const setUpRecaptcha = () => {
@@ -18,7 +20,7 @@ export default function PhoneAuth() {
         {
           size: "invisible",
           callback: () => {
-            console.log("reCAPTCHA solved");
+            // reCAPTCHA solved
           },
         }
       );
@@ -27,65 +29,90 @@ export default function PhoneAuth() {
 
   const sendOtp = async () => {
     if (!phoneNumber) {
-      setMessage("Enter a valid phone number including country code.");
+      antdMessage.error("Enter a valid phone number including country code.");
       return;
     }
+    setLoading(true);
     setUpRecaptcha();
     try {
       const appVerifier = window.recaptchaVerifier;
       const confirmation = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
       setConfirmationResult(confirmation);
-      setMessage("OTP sent! Check your phone.");
+      antdMessage.success("OTP sent! Check your phone.");
     } catch (error) {
       console.error(error);
-      setMessage(error.message);
+      antdMessage.error(error.message);
     }
+    setLoading(false);
   };
 
   const verifyOtp = async () => {
     if (!otp) {
-      setMessage("Enter the OTP sent to your phone.");
+      antdMessage.error("Enter the OTP sent to your phone.");
       return;
     }
+    setLoading(true);
     try {
       const result = await confirmationResult.confirm(otp);
-      setMessage(`Phone verified! UID: ${result.user.uid}`);
+      antdMessage.success(`Phone verified! UID: ${result.user.uid}`);
+      onClose(); // Close modal on success
     } catch (error) {
       console.error(error);
-      setMessage(error.message);
+      antdMessage.error(error.message);
     }
+    setLoading(false);
   };
 
   return (
-    <div style={{ padding: 20 }}>
-      <h2>Phone OTP Login</h2>
-
+    <Modal
+      title={<Title level={4} style={{ margin: 0 }}>Phone OTP Login</Title>}
+      visible={visible}
+      onCancel={onClose}
+      footer={null}
+      destroyOnClose
+      centered
+    >
       {!confirmationResult ? (
         <>
-          <input
-            type="tel"
+          <Input
             placeholder="+91 9876543210"
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
-            style={{ padding: 8, marginBottom: 10, width: "100%" }}
+            size="large"
+            style={{ marginBottom: 16 }}
+            autoFocus
           />
-          <button onClick={sendOtp} style={{ padding: 10 }}>Send OTP</button>
+          <Button
+            type="primary"
+            onClick={sendOtp}
+            loading={loading}
+            block
+          >
+            Send OTP
+          </Button>
         </>
       ) : (
         <>
-          <input
-            type="text"
+          <Input
             placeholder="Enter OTP"
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
-            style={{ padding: 8, marginBottom: 10, width: "100%" }}
+            size="large"
+            style={{ marginBottom: 16 }}
+            autoFocus
           />
-          <button onClick={verifyOtp} style={{ padding: 10 }}>Verify OTP</button>
+          <Button
+            type="primary"
+            onClick={verifyOtp}
+            loading={loading}
+            block
+          >
+            Verify OTP
+          </Button>
         </>
       )}
 
-      <div id="recaptcha-container"></div>
-      {message && <p>{message}</p>}
-    </div>
+      <div id="recaptcha-container" />
+    </Modal>
   );
 }

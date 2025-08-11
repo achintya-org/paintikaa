@@ -1,18 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { auth } from "../firebase"; // adjust path if needed
-import { signOut, onAuthStateChanged } from "firebase/auth";
-import PhoneAuth from "./PhoneAuth"; // we'll create this
+import { Button } from "antd";
+import PhoneAuth from "./PhoneAuth";
+import { auth } from "../firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 
 export default function Header({ style }) {
   const [user, setUser] = useState(null);
   const [showPhoneAuth, setShowPhoneAuth] = useState(false);
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
     });
-    return () => unsub();
+    return () => unsubscribe();
   }, []);
 
   const handleLogout = async () => {
@@ -30,7 +31,7 @@ export default function Header({ style }) {
       padding: "10px 20px",
       display: "flex",
       alignItems: "center",
-      justifyContent: "space-between", // space between left & right
+      justifyContent: "space-between",
       zIndex: 10,
       height: "60px",
       boxSizing: "border-box",
@@ -63,11 +64,16 @@ export default function Header({ style }) {
     button: {
       background: "transparent",
       border: "1px solid #fff",
-      borderRadius: "4px",
       color: "#fff",
-      padding: "6px 12px",
-      cursor: "pointer",
+      borderRadius: 4,
       fontSize: "0.9rem",
+      padding: "4px 12px",
+      cursor: "pointer",
+      height: 32,
+      minWidth: 70,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
     },
   };
 
@@ -80,19 +86,27 @@ export default function Header({ style }) {
         </Link>
 
         {user ? (
-          <button style={styles.button} onClick={handleLogout}>
+          <Button
+            type="text"
+            style={styles.button}
+            onClick={handleLogout}
+            ghost
+          >
             Logout
-          </button>
+          </Button>
         ) : (
-          <button style={styles.button} onClick={() => setShowPhoneAuth(true)}>
+          <Button
+            type="text"
+            style={styles.button}
+            onClick={() => setShowPhoneAuth(true)}
+            ghost
+          >
             Login
-          </button>
+          </Button>
         )}
       </header>
 
-      {showPhoneAuth && (
-        <PhoneAuth onClose={() => setShowPhoneAuth(false)} />
-      )}
+      <PhoneAuth visible={showPhoneAuth} onClose={() => setShowPhoneAuth(false)} />
     </>
   );
 }
