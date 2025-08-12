@@ -52,7 +52,6 @@ export default function Home() {
 
   return (
     <main style={styles.container}>
-      <h1 style={styles.heading}>Products</h1>
       {loading ? (
         <p style={styles.loadingText}>Loading products...</p>
       ) : products.length === 0 ? (

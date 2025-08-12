@@ -4,6 +4,7 @@ import {
   NotificationOutlined,
   UserOutlined,
   UploadOutlined,
+  BgColorsOutlined,
 } from "@ant-design/icons";
 import {
   Breadcrumb,
@@ -12,6 +13,9 @@ import {
   Button,
   theme,
   ConfigProvider,
+  ColorPicker,
+  Dropdown,
+  Menu as AntdMenu,
 } from "antd";
 import { BrowserRouter as Router, Link, Routes, Route, useLocation } from "react-router-dom";
 import { auth } from "./firebase";
@@ -48,7 +52,14 @@ const siderItems = [UserOutlined, LaptopOutlined, NotificationOutlined].map(
   }
 );
 
-function AppContent() {
+const colorTokens = {
+  colorPrimary: "Primary Color",
+  colorBgContainer: "Background Color",
+  colorText: "Text Color",
+  colorTextLightSolid: "Light Text Color",
+};
+
+function AppContent({ themeColors, setThemeColors }) {
   const location = useLocation();
 
   const {
@@ -68,6 +79,38 @@ function AppContent() {
 
   const showSidebar = location.pathname === "/";
 
+  // State for which color token is selected
+  const [selectedColorToken, setSelectedColorToken] = useState("colorPrimary");
+  // Control color picker open/close
+  const [pickerVisible, setPickerVisible] = useState(false);
+
+  // When user selects token from dropdown, update and open picker
+  const onMenuClick = ({ key }) => {
+    setSelectedColorToken(key);
+    setPickerVisible(true); // open color picker immediately after selection
+  };
+
+  // Handle color change updates themeColors state
+  const handleColorChange = (color) => {
+    if (!color) return;
+    setThemeColors((prev) => ({
+      ...prev,
+      [selectedColorToken]: color.toHexString(),
+    }));
+  };
+
+  const menu = (
+    <AntdMenu
+      selectedKeys={[selectedColorToken]}
+      onClick={onMenuClick}
+      items={Object.entries(colorTokens).map(([tokenKey, label]) => ({
+        key: tokenKey,
+        label,
+        icon: <BgColorsOutlined />,
+      }))}
+    />
+  );
+
   return (
     <>
       <Layout style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
@@ -77,7 +120,7 @@ function AppContent() {
             display: "flex",
             alignItems: "center",
             padding: "0 24px",
-            backgroundColor: "#2f3640"
+            backgroundColor: themeColors.colorPrimary,
           }}
         >
           {/* Left side: Logo */}
@@ -106,7 +149,7 @@ function AppContent() {
             mode="horizontal"
             defaultSelectedKeys={["2"]}
             items={navItems}
-            style={{ flex: 1, minWidth: 0, backgroundColor: "#2f3640" }}
+            style={{ flex: 1, minWidth: 0, backgroundColor: themeColors.colorPrimary }}
           />
 
           {/* Right side: Buttons */}
@@ -118,14 +161,37 @@ function AppContent() {
             }}
           >
             {user && (
-              <Button
-                type="text"
-                icon={<UploadOutlined style={{ fontSize: 18 }} />}
-                onClick={() => setShowUpload(true)}
-                style={{ color: "white" }}
-              >
-                Upload
-              </Button>
+              <>
+                <Dropdown overlay={menu} trigger={["click"]}>
+                  <Button
+                    type="text"
+                    icon={<BgColorsOutlined style={{ fontSize: 20, color: "white" }} />}
+                    style={{ color: "white" }}
+                    onClick={(e) => e.preventDefault()} // prevent default to keep dropdown stable
+                  />
+                </Dropdown>
+
+                {/* Show ColorPicker only when pickerVisible is true */}
+                {pickerVisible && (
+                  <ColorPicker
+                    value={themeColors[selectedColorToken]}
+                    onChange={handleColorChange}
+                    placement="bottomRight"
+                    style={{ width: 120 }}
+                    open={pickerVisible}
+                    onOpenChange={setPickerVisible}
+                  />
+                )}
+
+                <Button
+                  type="text"
+                  icon={<UploadOutlined style={{ fontSize: 18 }} />}
+                  onClick={() => setShowUpload(true)}
+                  style={{ color: "white" }}
+                >
+                  Upload
+                </Button>
+              </>
             )}
             {user ? (
               <Button
@@ -237,20 +303,21 @@ function AppContent() {
 }
 
 export default function App() {
+  const [themeColors, setThemeColors] = useState({
+    colorPrimary: "#b7a4a4",
+    colorBgContainer: "#dfd5d5",
+    colorText: "#433c3c",
+    colorTextLightSolid: "#fff",
+  });
+
   return (
     <ConfigProvider
       theme={{
-        token: {
-          colorPrimary: "#C08D3C", // Customize primary color
-          colorBgContainer: "#f0f2f5", // Container background color
-          colorText: "#C08E3C", // Default text color
-          colorTextLightSolid: "#fff", // Light text color
-          // add other tokens here as needed
-        },
+        token: themeColors,
       }}
     >
       <Router>
-        <AppContent />
+        <AppContent themeColors={themeColors} setThemeColors={setThemeColors} />
       </Router>
     </ConfigProvider>
   );
