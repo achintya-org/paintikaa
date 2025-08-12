@@ -16,6 +16,7 @@ import {
   ColorPicker,
   Dropdown,
   Menu as AntdMenu,
+  Grid,
 } from "antd";
 import { BrowserRouter as Router, Link, Routes, Route, useLocation } from "react-router-dom";
 import { auth } from "./firebase";
@@ -28,6 +29,7 @@ import Home from "./pages/Home.js";
 import Product from "./pages/Product";
 
 const { Header, Content, Footer, Sider } = Layout;
+const { useBreakpoint } = Grid;
 
 const navItems = ["1", "2", "3"].map((key) => ({
   key,
@@ -63,12 +65,18 @@ function AppContent({ themeColors, setThemeColors }) {
   const location = useLocation();
 
   const {
-    token: { colorBgContainer, borderRadiusLG },
+    token: { colorBgContainer, borderRadiusLG, colorPrimary },
   } = theme.useToken();
+
+  const screens = useBreakpoint();
+  const isMobile = !screens.md;
 
   const [user, setUser] = useState(null);
   const [showPhoneAuth, setShowPhoneAuth] = useState(false);
   const [showUpload, setShowUpload] = useState(false);
+
+  // Controlled collapsed state for sidebar
+  const [collapsed, setCollapsed] = useState(isMobile);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -77,20 +85,22 @@ function AppContent({ themeColors, setThemeColors }) {
     return () => unsubscribe();
   }, []);
 
+  // If screen size changes, reset collapsed state accordingly
+  useEffect(() => {
+    setCollapsed(isMobile);
+  }, [isMobile]);
+
   const showSidebar = location.pathname === "/";
 
-  // State for which color token is selected
+  // ColorPicker state
   const [selectedColorToken, setSelectedColorToken] = useState("colorPrimary");
-  // Control color picker open/close
   const [pickerVisible, setPickerVisible] = useState(false);
 
-  // When user selects token from dropdown, update and open picker
   const onMenuClick = ({ key }) => {
     setSelectedColorToken(key);
-    setPickerVisible(true); // open color picker immediately after selection
+    setPickerVisible(true);
   };
 
-  // Handle color change updates themeColors state
   const handleColorChange = (color) => {
     if (!color) return;
     setThemeColors((prev) => ({
@@ -113,13 +123,19 @@ function AppContent({ themeColors, setThemeColors }) {
 
   return (
     <>
-      <Layout style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
+      <Layout
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         {/* Header */}
         <Header
           style={{
             display: "flex",
             alignItems: "center",
-            padding: "0 24px",
+            padding: isMobile ? "0 12px" : "0 24px",
             backgroundColor: themeColors.colorPrimary,
           }}
         >
@@ -138,7 +154,14 @@ function AppContent({ themeColors, setThemeColors }) {
               alt="Paintikaa Logo"
               style={{ height: 40, marginRight: 12 }}
             />
-            <h2 style={{ color: "white", margin: 0, userSelect: "none" }}>
+            <h2
+              style={{
+                color: "white",
+                margin: 0,
+                userSelect: "none",
+                whiteSpace: "nowrap",
+              }}
+            >
               Paintikaa
             </h2>
           </Link>
@@ -149,7 +172,11 @@ function AppContent({ themeColors, setThemeColors }) {
             mode="horizontal"
             defaultSelectedKeys={["2"]}
             items={navItems}
-            style={{ flex: 1, minWidth: 0, backgroundColor: themeColors.colorPrimary }}
+            style={{
+              flex: 1,
+              minWidth: 0,
+              backgroundColor: themeColors.colorPrimary,
+            }}
           />
 
           {/* Right side: Buttons */}
@@ -167,11 +194,10 @@ function AppContent({ themeColors, setThemeColors }) {
                     type="text"
                     icon={<BgColorsOutlined style={{ fontSize: 20, color: "white" }} />}
                     style={{ color: "white" }}
-                    onClick={(e) => e.preventDefault()} // prevent default to keep dropdown stable
+                    onClick={(e) => e.preventDefault()}
                   />
                 </Dropdown>
 
-                {/* Show ColorPicker only when pickerVisible is true */}
                 {pickerVisible && (
                   <ColorPicker
                     value={themeColors[selectedColorToken]}
@@ -213,11 +239,11 @@ function AppContent({ themeColors, setThemeColors }) {
           </div>
         </Header>
 
-        {/* Content area grows and scrolls if needed */}
+        {/* Main Layout */}
         <Layout
           style={{
             flex: 1,
-            padding: "0 48px 24px",
+            padding: isMobile ? "0 12px 24px" : "0 48px 24px",
             marginTop: 16,
           }}
         >
@@ -231,19 +257,27 @@ function AppContent({ themeColors, setThemeColors }) {
           <Layout
             style={{
               padding: "24px 0",
-              background: colorBgContainer,
+              background: themeColors.colorBgContainer,
               borderRadius: borderRadiusLG,
               flex: 1,
               minHeight: 0,
             }}
           >
             {showSidebar && (
-              <Sider style={{ background: colorBgContainer }} width={200}>
+              <Sider
+                style={{ background: themeColors.colorBgContainer }}
+                width={200}
+                collapsible
+                collapsed={collapsed}
+                onCollapse={setCollapsed}
+                breakpoint="md"
+                collapsedWidth={isMobile ? 0 : 80}
+              >
                 <Menu
                   mode="inline"
                   defaultSelectedKeys={["1"]}
                   defaultOpenKeys={["sub1"]}
-                  style={{ height: "100%" }}
+                  style={{ height: "100%", background: themeColors.colorBgContainer }}
                   items={siderItems}
                 />
               </Sider>
@@ -268,7 +302,7 @@ function AppContent({ themeColors, setThemeColors }) {
           </Layout>
         </Layout>
 
-        {/* Footer at bottom of page, not fixed */}
+        {/* Footer */}
         <Footer
           style={{
             backgroundColor: "#fff",
